@@ -4433,6 +4433,18 @@
                 }
                 l(),
                     (Object(S.a)(".log").innerHTML = ""),
+(function () {
+    const goMenu = () => (location.href = "?mode=" + j);
+    window.addEventListener("keydown", (e) => {
+        "Escape" === e.code && goMenu();
+    });
+    const b = document.createElement("button");
+    b.textContent = "☰ Menu (Esc)";
+    b.tabIndex = -1;
+    b.style.cssText = "position:fixed;top:10px;right:10px;z-index:10;padding:6px 10px;cursor:pointer;";
+    b.addEventListener("click", goMenu);
+    document.body.appendChild(b);
+})(),
                     (function (M) {
                         switch (((Object(S.a)("main").style.display = "none"), (Object(S.a)("#canvas").style.display = "block"), (Object(S.a)(".ui").style.display = "block"), M)) {
                             case "death-match":
