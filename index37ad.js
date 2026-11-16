@@ -4434,16 +4434,33 @@
                 l(),
                     (Object(S.a)(".log").innerHTML = ""),
 (function () {
-    const goMenu = () => (location.href = "?mode=" + j);
-    window.addEventListener("keydown", (e) => {
-        "Escape" === e.code && goMenu();
-    });
-    const b = document.createElement("button");
-    b.textContent = "☰ Menu (Esc)";
-    b.tabIndex = -1;
-    b.style.cssText = "position:fixed;top:10px;right:10px;z-index:10;padding:6px 10px;cursor:pointer;";
-    b.addEventListener("click", goMenu);
-    document.body.appendChild(b);
+    const H = (window.__bpMenu = window.__bpMenu || (function () {
+        const origST = window.setTimeout, origSI = window.setInterval, origAEL = document.addEventListener, origRAF = window.requestAnimationFrame;
+        let active = false, paused = false, timers = [], listeners = [];
+        window.requestAnimationFrame = (cb) => (paused ? 0 : origRAF.call(window, cb));
+        origAEL.call(document, "keydown", (e) => {
+            if (active && e.code === "Escape") { e.preventDefault(); end(); }
+        }, true);
+        function begin() {
+            active = true; paused = false; timers = []; listeners = [];
+            window.setTimeout = (f, ms, ...a) => { const id = origST.call(window, f, ms, ...a); timers.push([id, 0]); return id; };
+            window.setInterval = (f, ms, ...a) => { const id = origSI.call(window, f, ms, ...a); timers.push([id, 1]); return id; };
+            document.addEventListener = function (t, f, o) { listeners.push([t, f, o]); return origAEL.call(document, t, f, o); };
+        }
+        function end() {
+            if (!active) return;
+            active = false; paused = true;
+            for (const [id, isInt] of timers) isInt ? clearInterval(id) : clearTimeout(id);
+            for (const [t, f, o] of listeners) document.removeEventListener(t, f, o);
+            window.setTimeout = origST; window.setInterval = origSI; delete document.addEventListener;
+            document.querySelector(".log").innerHTML = "";
+            document.querySelector("main").style.display = "";
+            document.querySelector("#canvas").style.display = "none";
+            document.querySelector(".ui").style.display = "none";
+        }
+        return { begin, end };
+    })());
+    H.begin();
 })(),
                     (function (M) {
                         switch (((Object(S.a)("main").style.display = "none"), (Object(S.a)("#canvas").style.display = "block"), (Object(S.a)(".ui").style.display = "block"), M)) {
